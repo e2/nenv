@@ -1,5 +1,5 @@
-require "nenv/environment/dumper"
-require "nenv/environment/loader"
+require 'nenv/environment/dumper'
+require 'nenv/environment/loader'
 
 module Nenv
   class Environment
@@ -14,7 +14,7 @@ module Nenv
 
     class AlreadyExistsError < MethodError
       def message
-        format("Method %s already exists", @meth.inspect)
+        format('Method %s already exists', @meth.inspect)
       end
     end
 
@@ -41,7 +41,7 @@ module Nenv
     private
 
     def _sanitize(meth)
-      meth[/^([^=?]*)[=?]?$/, 1].upcase
+      meth.to_s[/^([^=?]*)[=?]?$/, 1].upcase
     end
   end
 end

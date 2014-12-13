@@ -1,31 +1,31 @@
 require 'yaml'
 
-require "nenv/environment/dumper"
+require 'nenv/environment/dumper'
 
 RSpec.describe Nenv::Environment::Dumper do
   subject { described_class.new.dump(value) }
 
   context "with \"abc\"" do
-    let(:value) { "abc" }
-    it { is_expected.to eq("abc") }
+    let(:value) { 'abc' }
+    it { is_expected.to eq('abc') }
   end
 
-  context "with 123" do
+  context 'with 123' do
     let(:value) { 123 }
-    it { is_expected.to eq("123") }
+    it { is_expected.to eq('123') }
   end
 
-  context "with nil" do
+  context 'with nil' do
     let(:value) { nil }
     it { is_expected.to eq(nil) }
   end
 
-  context "with a block" do
+  context 'with a block' do
     subject do
-      described_class.new.dump(value) { |data| YAML::dump(data) }
+      described_class.new.dump(value) { |data| YAML.dump(data) }
     end
 
-    context "with a yaml string" do
+    context 'with a yaml string' do
       let(:value) { { foo: 3 } }
       let(:yaml) { "---\n:foo: 3\n" }
       it { is_expected.to eq(yaml) }

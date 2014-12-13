@@ -1,8 +1,8 @@
-require "nenv/version"
+require 'nenv/version'
 
-require "nenv/autoenvironment"
+require 'nenv/autoenvironment'
 
-def Nenv(namespace=nil)
+def Nenv(namespace = nil)
   Nenv::AutoEnvironment.new(namespace)
 end
 

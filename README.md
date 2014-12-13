@@ -221,13 +221,13 @@ Well sure, having ENV act like a Hash is much better than calling "getenv".
 
 Unfortunately, the advantages of using ENV make no sense:
 
-1) it's faster but ... environment variables are rarely used thousands of times in tight loops
-2) it's already an object ... but there's not much you can do with it
-3) it's globally available ... but you can't isolate it in tests (you need to reset it every time)
-4) you can use it to set variables ... but it's named like a const
-5) it allows you to use keys regardless of case ... but by convention lowercase shouldn't be used except for local variables (which are only really used by shell scripts)
-6) it's supposed to look ugly to discourage use ... but often your app/gem is forced to use them anyway
-7) it's a simple class ... but either you encapsulate it in your own classes - or all the value mapping/validation happens everywhere you want the data
+- it's faster but ... environment variables are rarely used thousands of times in tight loops
+- it's already an object ... but there's not much you can do with it (try ENV.class)
+- it's globally available ... but you can't isolate it in tests (you need to reset it every time)
+- you can use it to set variables ... but it's named like a const
+- it allows you to use keys regardless of case ... but by convention lowercase shouldn't be used except for local variables (which are only really used by shell scripts)
+- it's supposed to look ugly to discourage use ... but often your app/gem is forced to use them anyway
+- it's a simple class ... but either you encapsulate it in your own classes - or all the value mapping/validation happens everywhere you want the data (yuck!)
 
 
 But the BIGGEST disadvantage is in specs, e.g.:
