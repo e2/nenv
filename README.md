@@ -22,6 +22,10 @@ If you agree, this gem is for you.
 - strict mode saves you from doing validation yourself
 - and there's more to come...
 
+Other benefits (and compared to other solutions):
+- should still work with Ruby 1.8 (in case anyone is still stuck with it)
+- it's designed to be as lightweight and as fast as possible compared to ENV
+- designed to be both hackable and convenient
 
 ## Installation
 
