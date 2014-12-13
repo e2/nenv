@@ -6,7 +6,7 @@ default_tasks = []
 
 require 'rspec/core/rake_task'
 default_tasks  << RSpec::Core::RakeTask.new(:spec) do |t|
-  t.verbose = false
+  t.verbose = Nenv.ci?
 end
 
 unless Nenv.ci?
