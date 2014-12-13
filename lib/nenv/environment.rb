@@ -41,7 +41,7 @@ module Nenv
     private
 
     def _sanitize(meth)
-      meth[/^([^=?]*)[=?]?$/, 1].upcase
+      meth.to_s[/^([^=?]*)[=?]?$/, 1].upcase
     end
   end
 end
