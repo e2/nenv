@@ -1,5 +1,5 @@
-require "nenv/environment/dumper"
-require "nenv/environment/loader"
+require 'nenv/environment/dumper'
+require 'nenv/environment/loader'
 
 module Nenv
   class Environment
@@ -14,7 +14,7 @@ module Nenv
 
     class AlreadyExistsError < MethodError
       def message
-        format("Method %s already exists", @meth.inspect)
+        format('Method %s already exists', @meth.inspect)
       end
     end
 

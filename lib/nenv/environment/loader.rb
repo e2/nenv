@@ -2,7 +2,7 @@ module Nenv
   class Environment
     class Loader
       def initialize(meth)
-        @bool = meth.to_s.end_with?("?")
+        @bool = meth.to_s.end_with?('?')
       end
 
       def load(raw_value, &callback)
@@ -16,9 +16,9 @@ module Nenv
         case raw_value
         when nil
           nil
-        when ""
+        when ''
           fail ArgumentError, "Can't convert empty string into Bool"
-        when "0", "false", "n", "no", "NO", "FALSE"
+        when '0', 'false', 'n', 'no', 'NO', 'FALSE'
           false
         else
           true
