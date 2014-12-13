@@ -1,3 +1,7 @@
+[![Build Status](https://travis-ci.org/e2/nenv.png?branch=master)](https://travis-ci.org/e2/nenv)
+[![Gem Version](http://img.shields.io/gem/v/nenv.svg)](http://badge.fury.io/rb/nenv)
+[![Code Climate](https://codeclimate.com/github/e2/nenv/badges/gpa.svg)](https://codeclimate.com/github/e2/nenv)
+
 # Nenv
 
 Using ENV in Ruby is like using raw SQL statements - it feels wrong, because it is.
