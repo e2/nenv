@@ -50,4 +50,17 @@ RSpec.describe Nenv do
       end
     end
   end
+
+  # Test added here to properly test if builder is required
+  describe 'Nenv builder' do
+    before do
+      allow(ENV).to receive(:[]).with('FOO').and_return('false')
+    end
+    it 'is required and works' do
+      FooEnv = Nenv::Builder.build do
+        create_method(:foo?)
+      end
+      FooEnv.new.foo?
+    end
+  end
 end
