@@ -8,4 +8,5 @@ gem 'coveralls', require: false
 group :development do
   gem 'guard-rspec', '~> 4.5', require: false
   gem 'guard-rubocop', require: false
+  gem 'pry'
 end
