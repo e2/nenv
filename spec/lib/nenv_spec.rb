@@ -16,7 +16,7 @@ RSpec.describe Nenv do
     end
   end
 
-  describe 'Nenv() module' do
+  describe 'Nenv module' do
     it 'reads from env' do
       expect(ENV).to receive(:[]).with('CI').and_return('true')
       Nenv.ci?
