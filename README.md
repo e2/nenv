@@ -46,6 +46,7 @@ Or install it yourself as:
 You no longer have to care whether the value is "0" or "false" or "no" or "FALSE" or ... whatever
 
 ```ruby
+# Without Nenv
 t.verbose = (ENV['CI'] == 'true')
 ok = ENV['RUBYGEMS_GEMDEPS'] == "1" || ENV.key?('BUNDLE_GEMFILE']
 ENV['DEBUG'] = "true"
@@ -63,6 +64,7 @@ Nenv.debug = true
 ### "Namespaces"
 
 ```ruby
+# Without Nenv
 puts ENV['GIT_BROWSER`]
 puts ENV['GIT_PAGER`]
 puts ENV['GIT_EDITOR`]
@@ -80,6 +82,7 @@ puts git.editor
 ### Custom type handling
 
 ```ruby
+# Code without Nenv
 paths = [ENV['GEM_HOME`]] + ENV['GEM_PATH'].split(':')
 enable_logging if Integer(ENV['WEB_CONCURRENCY']) > 1
 mydata = YAML.load(ENV['MY_DATA'])
@@ -112,10 +115,10 @@ Nenv.verbose = debug
 ### Automatic conversion to string
 
 ```ruby
-ENV['RUBYGEMS_GEMDEPS'] = 1  # TypeError: no implicit conversion of Fixnum into String
+ENV['RUBYGEMS_GEMDEPS'] = 1  # TypeError: no implicit conversion of Fixnum (...)
 ```
 
-No automatically uses `to_s`:
+Nenv automatically uses `to_s`:
 
 ```ruby
 Nenv.rubygems_gemdeps = 1  # no problem here
@@ -133,7 +136,7 @@ ENV['MY_DATA'] = YAML.dump(data)
 can now become:
 
 ```ruby
-my = Nenv(:my)
+my = Nenv :my
 my.instance.create_method(:data) { |d| YAML.load(d) }
 my.instance.create_method(:data=) { |d| YAML.dump(d) }
 
@@ -145,6 +148,7 @@ my.data = data
 ### Strict mode
 
 ```ruby
+# Without Nenv
 fail 'home not allowed' if ENV['HOME'] = Dir.pwd  # BUG! Assignment instead of comparing!
 puts ENV['HOME'] # Now contains clobbered value
 ```
@@ -175,6 +179,21 @@ Nenv.web_concurrency += 3
 Nenv.path += Pathname.pwd + "foo"
 
 ```
+
+### Your own class
+
+```ruby
+class MyEnv < Nenv::Environment
+  def initialize
+    super("my_env")
+    create_method(:foo?)
+  end
+end
+
+MyEnv.new.foo? # same as ENV['MY_ENV_FOO'][/^(?:false|no|n|0)/i,1].nil?
+
+```
+
 
 ## NOTES
 
