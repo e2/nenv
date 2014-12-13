@@ -1,5 +1,6 @@
 [![Build Status](https://travis-ci.org/e2/nenv.png?branch=master)](https://travis-ci.org/e2/nenv)
 [![Gem Version](http://img.shields.io/gem/v/nenv.svg)](http://badge.fury.io/rb/nenv)
+[![Dependency Status](https://gemnasium.com/e2/nenv.svg)](https://gemnasium.com/e2/nenv)
 [![Code Climate](https://codeclimate.com/github/e2/nenv/badges/gpa.svg)](https://codeclimate.com/github/e2/nenv)
 [![Coverage Status](https://coveralls.io/repos/e2/nenv/badge.png)](https://coveralls.io/r/e2/nenv)
 
