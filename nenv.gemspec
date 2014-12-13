@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.email         = ['cezary@chronomantic.net']
   spec.summary       = "Convenience wrapper for Ruby's ENV"
   spec.description   = 'Using ENV is like using raw SQL statements in your code. Well all know how that ends...'
-  spec.homepage      = ''
+  spec.homepage      = 'https://github.com/e2/nenv'
   spec.license       = 'MIT'
 
   spec.files         = `git ls-files -z`.split("\x0")
