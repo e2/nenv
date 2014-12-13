@@ -186,17 +186,29 @@ Nenv.path += Pathname.pwd + "foo"
 
 ```
 
-### Your own class
+### Your own class (recommended version for simpler unit tests)
+
+```ruby
+MyEnv = Nenv::Builder.build do
+  create_method(:foo?)
+end
+
+MyEnv.new('my').foo? # same as ENV['MY_FOO'][/^(?:false|no|n|0)/i,1].nil?
+
+```
+
+
+### Your own class (dynamic version - not recommended because harder to test)
 
 ```ruby
 class MyEnv < Nenv::Environment
   def initialize
-    super("my_env")
+    super("my")
     create_method(:foo?)
   end
 end
 
-MyEnv.new.foo? # same as ENV['MY_ENV_FOO'][/^(?:false|no|n|0)/i,1].nil?
+MyEnv.new.foo? # same as ENV['MY_FOO'][/^(?:false|no|n|0)/i,1].nil?
 
 ```
 

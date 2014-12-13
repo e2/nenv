@@ -16,7 +16,7 @@ RSpec.describe Nenv do
     end
   end
 
-  describe 'Nenv() module' do
+  describe 'Nenv module' do
     it 'reads from env' do
       expect(ENV).to receive(:[]).with('CI').and_return('true')
       Nenv.ci?
@@ -48,6 +48,19 @@ RSpec.describe Nenv do
         expect(ENV).to receive(:[]).with('FOO').and_return('true')
         expect(Nenv.foo?).to be(true)
       end
+    end
+  end
+
+  # Test added here to properly test if builder is required
+  describe 'Nenv builder' do
+    before do
+      allow(ENV).to receive(:[]).with('FOO').and_return('false')
+    end
+    it 'is required and works' do
+      FooEnv = Nenv::Builder.build do
+        create_method(:foo?)
+      end
+      FooEnv.new.foo?
     end
   end
 end

@@ -10,7 +10,7 @@ RSpec.configure do |config|
     mocks.verify_partial_doubles = true
   end
 
-  config.filter_run :focus
+  config.filter_run focus: ENV['CI'] != 'true'
   config.run_all_when_everything_filtered = true
 
   config.disable_monkey_patching!
@@ -33,6 +33,11 @@ RSpec.configure do |config|
     allow(ENV).to receive(:[]=) do |key, value|
       fail "stub me: ENV[#{key.inspect}] = #{value.inspect}"
     end
+
+    allow(ENV).to receive(:[]).with('PRYRC').and_call_original
+    allow(ENV).to receive(:[]).with('DISABLE_PRY').and_call_original
+    allow(ENV).to receive(:[]).with('ANSICON').and_call_original
+    allow(ENV).to receive(:[]).with('TERM').and_call_original
   end
 
   config.after do

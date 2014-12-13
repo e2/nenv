@@ -1,6 +1,7 @@
 require 'nenv/version'
 
 require 'nenv/autoenvironment'
+require 'nenv/builder'
 
 def Nenv(namespace = nil)
   Nenv::AutoEnvironment.new(namespace)
