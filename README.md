@@ -71,9 +71,9 @@ Nenv.debug = true
 
 ```ruby
 # Without Nenv
-puts ENV['GIT_BROWSER`]
-puts ENV['GIT_PAGER`]
-puts ENV['GIT_EDITOR`]
+puts ENV['GIT_BROWSER']
+puts ENV['GIT_PAGER']
+puts ENV['GIT_EDITOR']
 ```
 
 now becomes:
