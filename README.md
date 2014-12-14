@@ -32,7 +32,7 @@ Other benefits (and compared to other solutions):
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'nenv'
+gem 'nenv', '~> 0.1'
 ```
 
 And then execute:
@@ -231,6 +231,14 @@ env = Nenv::Environment.new(:foo).tap { |e| e.create_method(:bar) }
 all work on the same variable, but each uses a different filter for reading the value.
 
 
+## Documentation / SemVer / API
+
+Any behavior not mentioned here (in this README) is subject to change. This
+includes module names, class names, file names, method names, etc.
+
+If you are relying on behavior not documented here, please open a ticket.
+
+
 ## What's wrong with ENV?
 
 Well sure, having ENV act like a Hash is much better than calling "getenv".
@@ -242,27 +250,56 @@ Unfortunately, the advantages of using ENV make no sense:
 - it's globally available ... but you can't isolate it in tests (you need to reset it every time)
 - you can use it to set variables ... but it's named like a const
 - it allows you to use keys regardless of case ... but by convention lowercase shouldn't be used except for local variables (which are only really used by shell scripts)
-- it's supposed to look ugly to discourage use ... but often your app/gem is forced to use them anyway
-- it's a simple class ... but either you encapsulate it in your own classes - or all the value mapping/validation happens everywhere you want the data (yuck!)
+- it's supposed to look ugly to discourage use ... but often your app/gem is forced to use 3rd party environment variables anyway
+- it's a simple Hash-like class ... but either you encapsulate it in your own classes - or all the value mapping/validation happens everywhere you want the data (yuck!)
 
 
 But the BIGGEST disadvantage is in specs, e.g.:
 
 ```ruby
-allow(ENV).to receive(:[]).with('MY_VARIABLE').and_return("old data")
-allow(ENV).to receive(:[]=).with('MY_VARIABLE', "new data")
+allow(ENV).to receive(:[]).with('MY_VARIABLE').and_return("foo")
+allow(ENV).to receive(:[]=).with('MY_VARIABLE', "foo bar")
+# (and if you get the above wrong, you may be debugging for a long, long time...)
 ```
 
-which could instead be completely isolated as:
+which could instead be completely isolated as (and without side effects):
 
 ```ruby
-let(:env) { instance_double(Nenv::Environment) }
-before { allow(Nenv::Environment).to receive(:new).with(:my).and_return(env) }
-
-allow(env).to receive(:variable).and_return("old data")
-allow(env).to receive(:variable=).with("new data")
+allow(env).to receive(:variable).and_return("foo")
+expect(env).to receive(:variable=).with("foo bar")
+# (with verifying doubles it's hard to get it wrong and get stuck)
 ```
 
+Here's a full example:
+
+```ruby
+# In your implementation
+MyEnv = Nenv::Builder.build do
+  create_method(:variable)
+  create_method(:variable=)
+end
+
+class Foo
+  def foo
+    MyEnv.new(:my).variable += "bar"
+  end
+end
+
+# Stubbing the class in your specs
+RSpec.describe Foo do
+  let(:env) { instance_double(MyEnv) }
+  before { allow(MyEnv).to receive(:new).with(:my).and_return(env) }
+
+  describe "#foo" do
+    before { allow(env).to receive(:variable).and_return("foo") }
+
+    it "appends a value" do
+      expect(env).to receive(:variable=).with("foo bar")
+      subject.foo
+    end
+  end
+end
+```
 
 ## Contributing
 
