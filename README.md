@@ -54,7 +54,7 @@ You no longer have to care whether the value is "0" or "false" or "no" or "FALSE
 ```ruby
 # Without Nenv
 t.verbose = (ENV['CI'] == 'true')
-ok = ENV['RUBYGEMS_GEMDEPS'] == "1" || ENV.key?('BUNDLE_GEMFILE']
+ok = ENV['RUBYGEMS_GEMDEPS'] == "1" || ENV.key?('BUNDLE_GEMFILE')
 ENV['DEBUG'] = "true"
 
 ```

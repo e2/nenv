@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.authors       = ['Cezary Baginski']
   spec.email         = ['cezary@chronomantic.net']
   spec.summary       = "Convenience wrapper for Ruby's ENV"
-  spec.description   = 'Using ENV is like using raw SQL statements in your code. Well all know how that ends...'
+  spec.description   = 'Using ENV is like using raw SQL statements in your code. We all know how that ends...'
   spec.homepage      = 'https://github.com/e2/nenv'
   spec.license       = 'MIT'
 
