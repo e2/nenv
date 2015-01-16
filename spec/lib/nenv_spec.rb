@@ -16,6 +16,24 @@ RSpec.describe Nenv do
     end
   end
 
+  describe 'Nenv() helper method with block' do
+    it 'reads from env' do
+      expect(ENV).to receive(:[]).with('GIT_BROWSER').and_return('chrome')
+      Nenv('git') do |git|
+        git.browser
+      end
+    end
+
+    it 'return the value from env' do
+      allow(ENV).to receive(:[]).with('GIT_BROWSER').and_return('firefox')
+      result = nil
+      Nenv('git') do |git|
+        result = git.browser
+      end
+      expect(result).to eq('firefox')
+    end
+  end
+
   describe 'Nenv module' do
     it 'reads from env' do
       expect(ENV).to receive(:[]).with('CI').and_return('true')
