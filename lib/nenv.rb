@@ -4,7 +4,9 @@ require 'nenv/autoenvironment'
 require 'nenv/builder'
 
 def Nenv(namespace = nil)
-  Nenv::AutoEnvironment.new(namespace)
+  Nenv::AutoEnvironment.new(namespace).tap do |env|
+    yield env if block_given?
+  end
 end
 
 module Nenv

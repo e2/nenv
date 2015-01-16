@@ -85,6 +85,16 @@ puts git.pager
 puts git.editor
 ```
 
+Or in block form
+
+```ruby
+Nenv :git do |git|
+  puts git.browser
+  puts git.pager
+  puts git.editor
+end
+```
+
 ### Custom type handling
 
 ```ruby
