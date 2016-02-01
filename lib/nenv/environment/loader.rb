@@ -1,12 +1,13 @@
 module Nenv
   class Environment
     class Loader
-      def initialize(meth)
+      def initialize(meth, &callback)
         @bool = meth.to_s.end_with?('?')
+        @callback = callback
       end
 
       def load(raw_value, &callback)
-        return callback.call(raw_value) if callback
+        return @callback.call(raw_value) if @callback
         @bool ? _to_bool(raw_value) : raw_value
       end
 

@@ -49,7 +49,7 @@ RSpec.describe Nenv::Environment::Loader do
 
   context 'with a block' do
     subject do
-      described_class.new(:foo).load(value) { |data| YAML.load(data) }
+      described_class.new(:foo) { |data| YAML.load(data) }.load(value)
     end
     context 'with a yaml string' do
       let(:value) { "--- foo\n...\n" }

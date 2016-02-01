@@ -92,8 +92,9 @@ RSpec.describe Nenv::Environment do
           end
 
           context 'with a block' do
+            let(:block) { proc { |data| YAML.load(data) } }
             before do
-              instance.create_method(:foo) { |data| YAML.load(data) }
+              instance.create_method(:foo, &block)
             end
 
             let(:value) { "---\n:foo: 5\n" }
@@ -102,8 +103,7 @@ RSpec.describe Nenv::Environment do
               allow(ENV).to receive(:[]).with('BAR_FOO')
                 .and_return(value)
 
-              allow(loader).to receive(:load).with(value) do |arg, &block|
-                expect(block).to be
+              allow(loader).to receive(:load).with(value) do |arg|
                 block.call(arg)
               end
 

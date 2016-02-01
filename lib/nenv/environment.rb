@@ -65,7 +65,7 @@ module Nenv
         env_name = nil
         klass.send(:define_method, meth) do
           env_name ||= _namespaced_sanitize(meth)
-          Loader.new(meth).load(ENV[env_name], &block)
+          Loader.new(meth, &block).load(ENV[env_name])
         end
       end
 
