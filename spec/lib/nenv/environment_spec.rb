@@ -138,8 +138,9 @@ RSpec.describe Nenv::Environment do
         end
 
         context 'with a block' do
+          let(:block) { proc { |data| YAML.dump(data) } }
           before do
-            instance.create_method(:foo=) { |data| YAML.dump(data) }
+            instance.create_method(:foo=, &block)
           end
 
           let(:result) { "---\n:foo: 5\n" }
@@ -147,8 +148,7 @@ RSpec.describe Nenv::Environment do
           it 'marshals using the block' do
             allow(ENV).to receive(:[]=).with('BAR_FOO', result)
 
-            allow(dumper).to receive(:dump).with(foo: 5) do |arg, &block|
-              expect(block).to be
+            allow(dumper).to receive(:dump).with(foo: 5) do |arg|
               block.call(arg)
             end
 

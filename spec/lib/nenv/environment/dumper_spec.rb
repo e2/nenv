@@ -22,7 +22,7 @@ RSpec.describe Nenv::Environment::Dumper do
 
   context 'with a block' do
     subject do
-      described_class.new.dump(value) { |data| YAML.dump(data) }
+      described_class.new { |data| YAML.dump(data) }.dump(value)
     end
 
     context 'with a yaml string' do

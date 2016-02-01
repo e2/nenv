@@ -57,7 +57,7 @@ module Nenv
         env_name = nil
         klass.send(:define_method, meth) do |raw_value|
           env_name ||= _namespaced_sanitize(meth)
-          ENV[env_name] = Dumper.new.dump(raw_value, &block)
+          ENV[env_name] = Dumper.new(&block).dump(raw_value)
         end
       end
 
