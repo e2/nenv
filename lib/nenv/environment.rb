@@ -55,17 +55,21 @@ module Nenv
 
       def _create_env_writer(klass, meth, &block)
         env_name = nil
+        dumper = nil
         klass.send(:define_method, meth) do |raw_value|
           env_name ||= _namespaced_sanitize(meth)
-          ENV[env_name] = Dumper.new(&block).dump(raw_value)
+          dumper ||= Dumper.new(&block)
+          ENV[env_name] = dumper.dump(raw_value)
         end
       end
 
       def _create_env_reader(klass, meth, &block)
         env_name = nil
+        loader = nil
         klass.send(:define_method, meth) do
           env_name ||= _namespaced_sanitize(meth)
-          Loader.new(meth, &block).load(ENV[env_name])
+          loader ||= Loader.new(meth, &block)
+          loader.load(ENV[env_name])
         end
       end
 
