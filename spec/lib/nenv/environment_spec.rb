@@ -3,46 +3,59 @@ require 'yaml'
 require 'nenv/environment'
 
 RSpec.describe Nenv::Environment do
-  let(:env) { instance_double(Hash) } # a hash is close enough
-  before(:each) { stub_const('ENV', env) }
-
-  context 'without integration' do
-    let(:dumper) { instance_double(described_class::Dumper) }
-    let(:loader) { instance_double(described_class::Loader) }
-
-    before do
-      allow(described_class::Dumper).to receive(:new).and_return(dumper)
-      allow(described_class::Loader).to receive(:new).and_return(loader)
+  class MockEnv < Hash # a hash is close enough
+    def []=(k, v)
+      super(k.to_s, v.to_s)
     end
+  end
 
-    context 'with no namespace' do
-      let(:instance) { described_class.new }
+  before { stub_const('ENV', MockEnv.new) }
+  subject { instance }
 
-      context 'with an existing method' do
-        before do
-          subject.create_method(:foo?)
+  shared_examples 'accessor methods' do
+    describe 'predicate method' do
+      before { subject.create_method(:foo?) }
+
+      it 'responds to it' do
+        expect(subject).to respond_to(:foo?)
+      end
+
+      context 'when the method already exists' do
+        let(:error) { described_class::AlreadyExistsError }
+        let(:message) { 'Method :foo? already exists' }
+        specify do
+          expect do
+            subject.create_method(:foo?)
+          end.to raise_error(error, message)
+        end
+      end
+
+      context 'with value stored in ENV' do
+        before { ENV[sample_key] = value }
+
+        describe 'when value is truthy' do
+          let(:value) { 'true' }
+          it 'should return true' do
+            expect(subject.foo?).to eq true
+          end
         end
 
-        it 'uses the name as full key' do
-          expect(ENV).to receive(:[]).with('FOO').and_return('true')
-          expect(loader).to receive(:load).with('true').and_return(true)
-          expect(subject.foo?).to eq(true)
+        describe 'when value is falsey' do
+          let(:value) { '0' }
+          it 'should return false' do
+            expect(subject.foo?).to eq false
+          end
         end
       end
     end
 
-    context 'with any namespace' do
-      let(:namespace) { 'bar' }
-      let(:instance) { described_class.new(namespace) }
+    describe 'reader method' do
+      context 'when added' do
+        before { subject.create_method(:foo) }
 
-      describe 'creating a method' do
-        subject { instance }
-
-        before do
-          subject.create_method(:foo)
+        it 'responds to it' do
+          expect(subject).to respond_to(:foo)
         end
-
-        it { is_expected.to respond_to(:foo) }
 
         context 'when the method already exists' do
           let(:error) { described_class::AlreadyExistsError }
@@ -55,165 +68,90 @@ RSpec.describe Nenv::Environment do
         end
       end
 
-      describe 'calling' do
-        subject { instance }
+      context 'with value stored in ENV' do
+        before { ENV[sample_key] = value }
 
-        context 'when method does not exist' do
-          let(:error) { NoMethodError }
-          let(:message) { /undefined method `foo' for/ }
-          it { expect { subject.foo }.to raise_error(error, message) }
-        end
+        context 'with no block' do
+          before { instance.create_method(:foo) }
+          let(:value) { 123 }
 
-        context 'with a reader method' do
-          context 'with no block' do
-            before { instance.create_method(meth) }
-
-            context 'with a normal method' do
-              let(:meth) { :foo }
-              before do
-                allow(loader).to receive(:load).with('123').and_return(123)
-              end
-
-              it 'returns unmarshalled stored value' do
-                expect(ENV).to receive(:[]).with('BAR_FOO').and_return('123')
-                expect(subject.foo).to eq 123
-              end
-            end
-
-            context 'with a bool method' do
-              let(:meth) { :foo? }
-
-              it 'references the proper ENV variable' do
-                allow(loader).to receive(:load).with('false').and_return(false)
-                expect(ENV).to receive(:[]).with('BAR_FOO').and_return('false')
-                expect(subject.foo?).to eq false
-              end
-            end
-          end
-
-          context 'with a block' do
-            let(:block) { proc { |data| YAML.load(data) } }
-            before do
-              instance.create_method(:foo, &block)
-            end
-
-            let(:value) { "---\n:foo: 5\n" }
-
-            it 'unmarshals using the block' do
-              allow(ENV).to receive(:[]).with('BAR_FOO')
-                .and_return(value)
-
-              allow(loader).to receive(:load).with(value) do |arg|
-                block.call(arg)
-              end
-
-              expect(subject.foo).to eq(foo: 5)
-            end
+          it 'returns marshalled stored value' do
+            expect(subject.foo).to eq '123'
           end
         end
 
-        context 'with a writer method' do
-          before { instance.create_method(:foo=) }
+        context 'with block' do
+          before { instance.create_method(:foo) { |data| YAML.load(data) } }
+          let(:value) { "---\n:foo: 5\n" }
 
-          it 'set the environment variable' do
-            expect(ENV).to receive(:[]=).with('BAR_FOO', '123')
-            allow(dumper).to receive(:dump).with(123).and_return('123')
-            subject.foo = 123
+          it 'returns unmarshalled stored value' do
+            expect(subject.foo).to eq(foo: 5)
           end
+        end
+      end
+    end
 
-          it 'marshals and stores the value' do
-            expect(ENV).to receive(:[]=).with('BAR_FOO', '123')
-            allow(dumper).to receive(:dump).with(123).and_return('123')
+    describe 'writer method' do
+      context 'when added' do
+        before { subject.create_method(:foo=) }
+
+        it 'responds to it' do
+          expect(subject).to respond_to(:foo=)
+        end
+
+        context 'when the method already exists' do
+          let(:error) { described_class::AlreadyExistsError }
+          let(:message) { 'Method :foo= already exists' }
+          specify do
+            expect do
+              subject.create_method(:foo=)
+            end.to raise_error(error, message)
+          end
+        end
+      end
+
+      describe 'env variable' do
+        after { expect(ENV[sample_key]).to eq result }
+
+        context 'with no block' do
+          before { subject.create_method(:foo=) }
+          let(:result) { '123' }
+
+          it 'stores a converted to string value' do
             subject.foo = 123
           end
         end
 
-        context 'with a method containing underscores' do
-          before { instance.create_method(:foo_baz) }
-          it 'reads the correct variable' do
-            expect(ENV).to receive(:[]).with('BAR_FOO_BAZ').and_return('123')
-            allow(loader).to receive(:load).with('123').and_return(123)
-            subject.foo_baz
-          end
-        end
-
-        context 'with a block' do
-          let(:block) { proc { |data| YAML.dump(data) } }
-          before do
-            instance.create_method(:foo=, &block)
-          end
-
+        context 'with block' do
+          before { subject.create_method(:foo=) { |data| YAML.dump(data) } }
           let(:result) { "---\n:foo: 5\n" }
 
-          it 'marshals using the block' do
-            allow(ENV).to receive(:[]=).with('BAR_FOO', result)
-
-            allow(dumper).to receive(:dump).with(foo: 5) do |arg|
-              block.call(arg)
-            end
-
+          it 'stores a marshaled value' do
             subject.foo = { foo: 5 }
           end
-        end
-
-        context 'with an unsanitized name' do
-          pending
         end
       end
     end
   end
 
-  describe 'with integration' do
-    context 'with any namespace' do
-      let(:namespace) { 'baz' }
-      let(:instance) { described_class.new(namespace) }
-      subject { instance }
+  context 'with no namespace' do
+    let(:instance) { described_class.new }
+    let(:sample_key) { 'FOO' }
+    include_examples 'accessor methods'
+  end
 
-      context 'with a reader method' do
-        context 'with no block' do
-          before { instance.create_method(:foo) }
+  context 'with any namespace' do
+    let(:namespace) { 'bar' }
+    let(:sample_key) { 'BAR_FOO' }
+    let(:instance) { described_class.new(namespace) }
+    include_examples 'accessor methods'
 
-          it 'returns the stored value' do
-            allow(ENV).to receive(:[]).with('BAZ_FOO').and_return('123')
-            expect(subject.foo).to eq '123'
-          end
-        end
+    context 'with a method containing underscores' do
+      before { instance.create_method(:foo_baz) }
 
-        context 'with a block' do
-          before do
-            instance.create_method(:foo) { |data| YAML.load(data) }
-          end
-
-          it 'unmarshals the value' do
-            expect(ENV).to receive(:[]).with('BAZ_FOO')
-              .and_return("---\n:foo: 5\n")
-
-            expect(subject.foo).to eq(foo: 5)
-          end
-        end
-      end
-
-      context 'with a writer method' do
-        context 'with no block' do
-          before { instance.create_method(:foo=) }
-
-          it 'marshals and stores the value' do
-            expect(ENV).to receive(:[]=).with('BAZ_FOO', '123')
-            subject.foo = 123
-          end
-        end
-
-        context 'with a block' do
-          before do
-            instance.create_method(:foo=) { |data| YAML.dump(data) }
-          end
-
-          it 'nmarshals the value' do
-            expect(ENV).to receive(:[]=).with('BAZ_FOO', "---\n:foo: 5\n")
-
-            subject.foo = { foo: 5 }
-          end
-        end
+      it 'reads the correct variable' do
+        ENV['BAR_FOO_BAZ'] = 123
+        expect(subject.foo_baz).to eq '123'
       end
     end
   end
