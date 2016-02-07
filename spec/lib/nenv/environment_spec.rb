@@ -5,7 +5,9 @@ require 'nenv/environment'
 RSpec.describe Nenv::Environment do
   class MockEnv < Hash # a hash is close enough
     def []=(k, v)
-      super(k.to_s, v.to_s)
+      fail TypeError, "no implicit conversion of #{k.class} into String" unless k.respond_to? :to_str
+      fail TypeError, "no implicit conversion of #{v.class} into String" unless v.respond_to? :to_str
+      super(k.to_str, v.to_str)
     end
   end
 
@@ -73,7 +75,7 @@ RSpec.describe Nenv::Environment do
 
         context 'with no block' do
           before { instance.create_method(:foo) }
-          let(:value) { 123 }
+          let(:value) { '123' }
 
           it 'returns marshalled stored value' do
             expect(subject.foo).to eq '123'
@@ -150,7 +152,7 @@ RSpec.describe Nenv::Environment do
       before { instance.create_method(:foo_baz) }
 
       it 'reads the correct variable' do
-        ENV['BAR_FOO_BAZ'] = 123
+        ENV['BAR_FOO_BAZ'] = '123'
         expect(subject.foo_baz).to eq '123'
       end
     end
