@@ -58,8 +58,8 @@ module Nenv
         dumper = nil
         klass.send(:define_method, meth) do |raw_value|
           env_name ||= _namespaced_sanitize(meth)
-          dumper ||= Dumper.new(&block)
-          ENV[env_name] = dumper.dump(raw_value)
+          dumper ||= Dumper.setup(&block)
+          ENV[env_name] = dumper.(raw_value)
         end
       end
 
@@ -68,8 +68,8 @@ module Nenv
         loader = nil
         klass.send(:define_method, meth) do
           env_name ||= _namespaced_sanitize(meth)
-          loader ||= Loader.new(meth, &block)
-          loader.load(ENV[env_name])
+          loader ||= Loader.setup(meth, &block)
+          loader.(ENV[env_name])
         end
       end
 

@@ -3,7 +3,7 @@ require 'yaml'
 require 'nenv/environment/dumper'
 
 RSpec.describe Nenv::Environment::Dumper do
-  subject { described_class.new.dump(value) }
+  subject { described_class.setup.(value) }
 
   context "with \"abc\"" do
     let(:value) { 'abc' }
@@ -22,7 +22,7 @@ RSpec.describe Nenv::Environment::Dumper do
 
   context 'with a block' do
     subject do
-      described_class.new { |data| YAML.dump(data) }.dump(value)
+      described_class.setup { |data| YAML.dump(data) }.(value)
     end
 
     context 'with a yaml string' do

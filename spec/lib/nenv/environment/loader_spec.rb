@@ -3,7 +3,7 @@ require 'nenv/environment/loader'
 
 RSpec.describe Nenv::Environment::Loader do
   context 'with no block' do
-    subject { described_class.new(meth).load(value) }
+    subject { described_class.setup(meth).(value) }
 
     context 'with a normal method' do
       let(:meth) { :foo }
@@ -49,7 +49,7 @@ RSpec.describe Nenv::Environment::Loader do
 
   context 'with a block' do
     subject do
-      described_class.new(:foo) { |data| YAML.load(data) }.load(value)
+      described_class.setup(:foo) { |data| YAML.load(data) }.(value)
     end
     context 'with a yaml string' do
       let(:value) { "--- foo\n...\n" }
