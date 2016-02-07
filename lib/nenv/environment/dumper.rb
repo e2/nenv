@@ -1,9 +1,14 @@
 module Nenv
   class Environment
-    class Dumper
-      def dump(raw_value, &callback)
-        return callback.call(raw_value) if callback
-        raw_value.nil? ? nil : raw_value.to_s
+    module Dumper
+      require 'nenv/environment/dumper/default'
+
+      def self.setup(&callback)
+        if callback
+          callback
+        else
+          Default
+        end
       end
     end
   end
