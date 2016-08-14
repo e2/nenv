@@ -99,7 +99,7 @@ end
 
 ```ruby
 # Code without Nenv
-paths = [ENV['GEM_HOME`]] + ENV['GEM_PATH'].split(':')
+paths = [ENV['GEM_HOME']] + ENV['GEM_PATH'].split(':')
 enable_logging if Integer(ENV['WEB_CONCURRENCY']) > 1
 mydata = YAML.load(ENV['MY_DATA'])
 ENV['VERBOSE'] = debug ? "1" : nil
